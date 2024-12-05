@@ -1,0 +1,28 @@
+2024-12-04 22:47:10,738 - ERROR - Error procesando C:/Users/USER/Desktop/aver\marvell.jpg: object of type 'NoneType' has no len()
+2024-12-04 22:47:10,775 - ERROR - Error creando vista previa para C:/Users/USER/Pictures/Saved Pictures\marvell.jpg: [Errno 2] No such file or directory: 'C:\\Users\\USER\\Pictures\\Saved Pictures\\marvell.jpg'
+2024-12-04 22:47:10,775 - INFO - Proceso completado!
+Tamaño original total: 0.00 MB
+Tamaño comprimido total: 0.00 MB
+Espacio ahorrado: 0.00 MB (0.00%)
+2024-12-04 22:48:11,083 - ERROR - Error procesando C:/Users/USER/Desktop/aver\marvell.jpg: object of type 'NoneType' has no len()
+2024-12-04 22:48:11,085 - ERROR - Error creando vista previa para C:/Users/USER/Pictures/Saved Pictures\marvell.jpg: [Errno 2] No such file or directory: 'C:\\Users\\USER\\Pictures\\Saved Pictures\\marvell.jpg'
+2024-12-04 22:48:11,085 - INFO - Proceso completado!
+Tamaño original total: 0.00 MB
+Tamaño comprimido total: 0.00 MB
+Espacio ahorrado: 0.00 MB (0.00%)
+2024-12-04 22:48:16,167 - ERROR - Error procesando C:/Users/USER/Desktop/aver\marvell.jpg: object of type 'NoneType' has no len()
+2024-12-04 22:48:16,168 - ERROR - Error creando vista previa para C:/Users/USER/Pictures/Saved Pictures\marvell.jpg: [Errno 2] No such file or directory: 'C:\\Users\\USER\\Pictures\\Saved Pictures\\marvell.jpg'
+2024-12-04 22:48:16,169 - INFO - Proceso completado!
+Tamaño original total: 0.00 MB
+Tamaño comprimido total: 0.00 MB
+Espacio ahorrado: 0.00 MB (0.00%)
+2024-12-04 22:49:32,758 - ERROR - Error creando vista previa para C:/Users/USER/Desktop/aver\vincent_victory.png: cannot identify image file 'C:\\Users\\USER\\Desktop\\aver\\vincent_victory.png'
+2024-12-04 22:49:33,333 - INFO - Proceso completado!
+Tamaño original total: 0.47 MB
+Tamaño comprimido total: 1.22 MB
+Espacio ahorrado: -0.74 MB (-156.45%)
+2024-12-04 22:49:57,595 - ERROR - Error creando vista previa para C:/Users/USER/Desktop/aver\vincent_victory.png: cannot identify image file 'C:\\Users\\USER\\Desktop\\aver\\vincent_victory.png'
+2024-12-04 22:49:58,181 - INFO - Proceso completado!
+Tamaño original total: 0.47 MB
+Tamaño comprimido total: 1.22 MB
+Espacio ahorrado: -0.74 MB (-156.45%)
