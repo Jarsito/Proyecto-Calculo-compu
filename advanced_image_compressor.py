@@ -11,151 +11,151 @@ from io import BytesIO
 register_heif_opener()
 
 # Configurar logging
-logging.basicConfig(filename='image_compressor.log', level=logging.INFO,
-                    format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(filename='compresor_imagenes.log', level=logging.INFO,
+                    format='%(asctime)s - %(nivelname)s - %(mensaje)s')
 
-def get_image_files(directory):
-    image_extensions = ('.jpg', '.jpeg', '.png', '.webp', '.heic', '.tiff')
-    for root, _, files in os.walk(directory):
-        for file in files:
-            if file.lower().endswith(image_extensions):
-                yield os.path.join(root, file)
+def obtener_archivos_imagen(directorio):
+    extensiones_imagen = ('.jpg', '.jpeg', '.png', '.webp', '.heic', '.tiff')
+    for raiz, _, archivos in os.walk(directorio):
+        for archivo in archivos:
+            if archivo.lower().endswith(extensiones_imagen):
+                yield os.path.join(raiz, archivo)
 
-def compress_image(input_path, output_path, quality, max_size=None, output_format=None, keep_aspect_ratio=True):
+def comprimir_imagen(ruta_entrada, ruta_salida, calidad, tamano_max=None, formato_salida=None, mantener_relacion_aspecto=True):
     try:
-        with Image.open(input_path) as img:
+        with Image.open(ruta_entrada) as img:
             # Preservar metadatos EXIF
             exif = img.info.get('exif')
             
             # Redimensionar si se especifica
-            if max_size:
-                if keep_aspect_ratio:
-                    img.thumbnail(max_size)
+            if tamano_max:
+                if mantener_relacion_aspecto:
+                    img.thumbnail(tamano_max)
                 else:
-                    img = img.resize(max_size, Image.LANCZOS)
+                    img = img.resize(tamano_max, Image.LANCZOS)
             
             # Determinar el formato de salida
-            if output_format:
-                save_format = output_format
+            if formato_salida:
+                formato_guardar = formato_salida
             else:
-                save_format = os.path.splitext(output_path)[1].lower().replace('.', '')
-                if save_format in ('jpg', 'jpeg'):
-                    save_format = 'JPEG'
-                elif save_format == 'png':
-                    save_format = 'PNG'
+                formato_guardar = os.path.splitext(ruta_salida)[1].lower().replace('.', '')
+                if formato_guardar in ('jpg', 'jpeg'):
+                    formato_guardar = 'JPEG'
+                elif formato_guardar == 'png':
+                    formato_guardar = 'PNG'
 
             # Guardar la imagen comprimida
-            if save_format == 'PNG':
-                img.save(output_path, format=save_format, optimize=True, exif=exif)
+            if formato_guardar == 'PNG':
+                img.save(ruta_salida, format=formato_guardar, optimize=True, exif=exif)
             else:
-                img.save(output_path, format=save_format, quality=quality, optimize=True, exif=exif)
+                img.save(ruta_salida, format=formato_guardar, quality=calidad, optimize=True, exif=exif)
             
-        return os.path.getsize(input_path), os.path.getsize(output_path)
+        return os.path.getsize(ruta_entrada), os.path.getsize(ruta_salida)
     except Exception as e:
-        logging.error(f"Error procesando {input_path}: {str(e)}")
+        logging.error(f"Error procesando {ruta_entrada}: {str(e)}")
         return 0, 0
 
-def create_preview(image_path, max_size=(300, 300)):
+def crear_vista_previa(ruta_imagen, tamano_max=(300, 300)):
     try:
-        with Image.open(image_path) as img:
-            img.thumbnail(max_size)
+        with Image.open(ruta_imagen) as img:
+            img.thumbnail(tamano_max)
             bio = BytesIO()
             img.save(bio, format="PNG")
             return bio.getvalue()
     except Exception as e:
-        logging.error(f"Error creando vista previa para {image_path}: {str(e)}")
+        logging.error(f"Error creando vista previa para {ruta_imagen}: {str(e)}")
         return None
 
 def main():
     sg.theme('LightGrey1')
 
-    layout = [
-        [sg.Text('Directorio de entrada:'), sg.Input(key='-IN-'), sg.FolderBrowse()],
-        [sg.Text('Directorio de salida:'), sg.Input(key='-OUT-'), sg.FolderBrowse()],
-        [sg.Text('Calidad (1-95):'), sg.Slider(range=(1, 95), default_value=85, orientation='h', size=(20, 15), key='-QUALITY-')],
-        [sg.Checkbox('Redimensionar', key='-RESIZE-'), sg.Text('Ancho:'), sg.Input('1920', size=(5,1), key='-WIDTH-'), 
-         sg.Text('Alto:'), sg.Input('1080', size=(5,1), key='-HEIGHT-')],
-        [sg.Checkbox('Mantener relación de aspecto', default=True, key='-ASPECT-')],
-        [sg.Text('Formato de salida:'), sg.Combo(['Original', 'JPEG', 'PNG', 'WebP'], default_value='Original', key='-FORMAT-')],
+    diseño = [
+        [sg.Text('Directorio de entrada:'), sg.Input(key='-ENTRADA-'), sg.FolderBrowse()],
+        [sg.Text('Directorio de salida:'), sg.Input(key='-SALIDA-'), sg.FolderBrowse()],
+        [sg.Text('Calidad (1-95):'), sg.Slider(range=(1, 95), default_value=85, orientation='h', size=(20, 15), key='-CALIDAD-')],
+        [sg.Checkbox('Redimensionar', key='-REDIMENSIONAR-'), sg.Text('Ancho:'), sg.Input('1920', size=(5,1), key='-ANCHO-'), 
+         sg.Text('Alto:'), sg.Input('1080', size=(5,1), key='-ALTO-')],
+        [sg.Checkbox('Mantener relación de aspecto', default=True, key='-ASPECTO-')],
+        [sg.Text('Formato de salida:'), sg.Combo(['Original', 'JPEG', 'PNG', 'WebP'], default_value='Original', key='-FORMATO-')],
         [sg.Button('Comprimir'), sg.Button('Cancelar')],
-        [sg.Text('', size=(40, 1), key='-OUTPUT-')],
-        [sg.ProgressBar(100, orientation='h', size=(20, 20), key='-PROGRESS-')],
-        [sg.Image(key='-IMAGE-BEFORE-'), sg.Image(key='-IMAGE-AFTER-')]
+        [sg.Text('', size=(40, 1), key='-SALIDA-TEXTO-')],
+        [sg.ProgressBar(100, orientation='h', size=(20, 20), key='-PROGRESO-')],
+        [sg.Image(key='-IMAGEN-ANTES-'), sg.Image(key='-IMAGEN-DESPUES-')]
     ]
 
-    window = sg.Window('Compresor de Imágenes Avanzado', layout)
+    ventana = sg.Window('Compresor de Imágenes Avanzado', diseño)
 
     while True:
-        event, values = window.read()
-        if event == sg.WINDOW_CLOSED or event == 'Cancelar':
+        evento, valores = ventana.read()
+        if evento == sg.WINDOW_CLOSED or evento == 'Cancelar':
             break
-        if event == 'Comprimir':
-            input_dir = values['-IN-']
-            output_dir = values['-OUT-'] if values['-OUT-'] else input_dir
-            quality = int(values['-QUALITY-'])
-            resize = values['-RESIZE-']
-            max_size = (int(values['-WIDTH-']), int(values['-HEIGHT-'])) if resize else None
-            keep_aspect_ratio = values['-ASPECT-']
-            output_format = values['-FORMAT-'] if values['-FORMAT-'] != 'Original' else None
+        if evento == 'Comprimir':
+            directorio_entrada = valores['-ENTRADA-']
+            directorio_salida = valores['-SALIDA-'] if valores['-SALIDA-'] else directorio_entrada
+            calidad = int(valores['-CALIDAD-'])
+            redimensionar = valores['-REDIMENSIONAR-']
+            tamano_max = (int(valores['-ANCHO-']), int(valores['-ALTO-'])) if redimensionar else None
+            mantener_relacion_aspecto = valores['-ASPECTO-']
+            formato_salida = valores['-FORMATO-'] if valores['-FORMATO-'] != 'Original' else None
 
-            if not os.path.isdir(input_dir):
+            if not os.path.isdir(directorio_entrada):
                 sg.popup_error('El directorio de entrada no existe.')
                 continue
 
-            if not os.path.exists(output_dir):
-                os.makedirs(output_dir)
+            if not os.path.exists(directorio_salida):
+                os.makedirs(directorio_salida)
 
-            image_files = list(get_image_files(input_dir))
-            total_images = len(image_files)
+            archivos_imagen = list(obtener_archivos_imagen(directorio_entrada))
+            total_imagenes = len(archivos_imagen)
 
-            if total_images == 0:
+            if total_imagenes == 0:
                 sg.popup_error('No se encontraron imágenes en el directorio especificado.')
                 continue
 
-            window['-OUTPUT-'].update(f'Procesando {total_images} imágenes...')
-            progress_bar = window['-PROGRESS-']
+            ventana['-SALIDA-TEXTO-'].update(f'Procesando {total_imagenes} imágenes...')
+            barra_progreso = ventana['-PROGRESO-']
             
-            total_original_size = 0
-            total_compressed_size = 0
+            tamano_original_total = 0
+            tamano_comprimido_total = 0
 
-            with concurrent.futures.ThreadPoolExecutor() as executor:
-                futures = []
-                for i, input_path in enumerate(image_files):
-                    relative_path = os.path.relpath(input_path, input_dir)
-                    output_path = os.path.join(output_dir, relative_path)
-                    if output_format:
-                        output_path = os.path.splitext(output_path)[0] + '.' + output_format.lower()
-                    os.makedirs(os.path.dirname(output_path), exist_ok=True)
-                    futures.append(executor.submit(compress_image, input_path, output_path, quality, max_size, output_format, keep_aspect_ratio))
+            with concurrent.futures.ThreadPoolExecutor() as ejecutor:
+                futuros = []
+                for i, ruta_entrada in enumerate(archivos_imagen):
+                    ruta_relativa = os.path.relpath(ruta_entrada, directorio_entrada)
+                    ruta_salida = os.path.join(directorio_salida, ruta_relativa)
+                    if formato_salida:
+                        ruta_salida = os.path.splitext(ruta_salida)[0] + '.' + formato_salida.lower()
+                    os.makedirs(os.path.dirname(ruta_salida), exist_ok=True)
+                    futuros.append(ejecutor.submit(comprimir_imagen, ruta_entrada, ruta_salida, calidad, tamano_max, formato_salida, mantener_relacion_aspecto))
 
-                    if i == 0:  # Preview first image
-                        before_preview = create_preview(input_path)
-                        if before_preview:
-                            window['-IMAGE-BEFORE-'].update(data=before_preview)
+                    if i == 0:  # Vista previa primera imagen
+                        vista_previa_antes = crear_vista_previa(ruta_entrada)
+                        if vista_previa_antes:
+                            ventana['-IMAGEN-ANTES-'].update(data=vista_previa_antes)
 
-                for i, future in enumerate(concurrent.futures.as_completed(futures)):
-                    original_size, compressed_size = future.result()
-                    total_original_size += original_size
-                    total_compressed_size += compressed_size
-                    progress_bar.UpdateBar(i + 1, total_images)
+                for i, futuro in enumerate(concurrent.futures.as_completed(futuros)):
+                    tamano_original, tamano_comprimido = futuro.result()
+                    tamano_original_total += tamano_original
+                    tamano_comprimido_total += tamano_comprimido
+                    barra_progreso.UpdateBar(i + 1, total_imagenes)
 
-                    if i == 0:  # Preview first compressed image
-                        after_preview = create_preview(output_path)
-                        if after_preview:
-                            window['-IMAGE-AFTER-'].update(data=after_preview)
+                    if i == 0:  # Vista previa primera imagen comprimida
+                        vista_previa_despues = crear_vista_previa(ruta_salida)
+                        if vista_previa_despues:
+                            ventana['-IMAGEN-DESPUES-'].update(data=vista_previa_despues)
 
-            space_saved = total_original_size - total_compressed_size
-            space_saved_percent = (space_saved / total_original_size) * 100 if total_original_size > 0 else 0
+            espacio_ahorrado = tamano_original_total - tamano_comprimido_total
+            porcentaje_ahorrado = (espacio_ahorrado / tamano_original_total) * 100 if tamano_original_total > 0 else 0
 
-            result = f"Proceso completado!\n"
-            result += f"Tamaño original total: {total_original_size / (1024*1024):.2f} MB\n"
-            result += f"Tamaño comprimido total: {total_compressed_size / (1024*1024):.2f} MB\n"
-            result += f"Espacio ahorrado: {space_saved / (1024*1024):.2f} MB ({space_saved_percent:.2f}%)"
+            resultado = f"Proceso completado!\n"
+            resultado += f"Tamaño original total: {tamano_original_total / (1024*1024):.2f} MB\n"
+            resultado += f"Tamaño comprimido total: {tamano_comprimido_total / (1024*1024):.2f} MB\n"
+            resultado += f"Espacio ahorrado: {espacio_ahorrado / (1024*1024):.2f} MB ({porcentaje_ahorrado:.2f}%)"
 
-            window['-OUTPUT-'].update(result)
-            logging.info(result)
+            ventana['-SALIDA-TEXTO-'].update(resultado)
+            logging.info(resultado)
 
-    window.close()
+    ventana.close()
 
 if __name__ == "__main__":
     main()
